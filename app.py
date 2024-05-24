@@ -4,7 +4,7 @@ import plotly.express as px
 from procesamiento.stock_valorizado import procesar_stock_valorizado
 from procesamiento.precio_venta_promedio import procesar_precio_venta_promedio
 from io import BytesIO
-from login import login
+from login import login, crear_usuario, cargar_usuarios
 
 
 # Función que reemplaza a la función `rutas` original
@@ -19,6 +19,9 @@ def rutas(option, df_stock, df_ventas, df_vencimientos):
 # Función para validar el nombre del archivo
 def validar_nombre_archivo(ruta_archivo, palabra_clave):
     return palabra_clave.lower() in ruta_archivo.lower()
+
+# Cargar usuarios desde el archivo JSON
+users = cargar_usuarios()
 
 # Función principal de la aplicación Streamlit
 def main():
@@ -36,11 +39,26 @@ def main():
         username = st.text_input("Usuario")
         password = st.text_input("Contraseña", type="password")
         if st.button("Iniciar Sesión"):
-            if login(username, password):
+            if login(username, password,users):
                 st.session_state.logged_in = True
                 st.rerun()
             else:
                 st.error("Credenciales incorrectas. Por favor, inténtelo nuevamente.")
+
+        # Mostrar el formulario para crear un nuevo usuario
+        st.subheader("Crear Nuevo Usuario")
+        new_user_col1, new_user_col2, new_user_col3 = st.columns([1, 1, 1])
+        with new_user_col1:
+            nuevo_usuario = st.text_input("Nuevo Usuario")
+        with new_user_col2:
+            nueva_contraseña = st.text_input("Nueva Contraseña", type="password")
+        with new_user_col3:
+            if st.button("Crear Usuario"):
+                if crear_usuario(nuevo_usuario, nueva_contraseña, users):
+                    st.success("Usuario creado exitosamente.")
+                else:
+                    st.error("No se pudo crear el usuario. El nombre de usuario ya existe.")
+    
     else:
         # Mostrar la página principal de la aplicación si el usuario ha iniciado sesión
         selected_options = st.multiselect("Seleccione una opción", options)
