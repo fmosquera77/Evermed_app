@@ -29,3 +29,5 @@ def obtener_cotizacion_dolar():
             raise Exception("No se pudo obtener la cotización del dólar.")
     except Exception as e:
         raise Exception(f"Ocurrió un error: {str(e)}")
+
+dolar = obtener_cotizacion_dolar()

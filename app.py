@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from procesamiento.stock_valorizado import procesar_stock_valorizado
 from procesamiento.precio_venta_promedio import procesar_precio_venta_promedio
+from procesamiento.cotizacion_dolar import dolar
 from io import BytesIO
 from login import login, crear_usuario, cargar_usuarios
 
@@ -122,6 +123,8 @@ def main():
                 elif option == "Precio Venta Promedio" and df_ventas is not None:
                     output_df = rutas("Precio Venta Promedio", None, df_ventas, None)
                 
+                if option == "Stock Valorizado":
+                    st.write("Dolar: "+ str(dolar), style={"color": "black", "font-size": "24px"})
 
                 if output_df is not None:
                     # Mostrar el DataFrame en pantalla
