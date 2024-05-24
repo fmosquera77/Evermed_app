@@ -30,6 +30,8 @@ def main():
     # Verificar si el usuario ha iniciado sesión
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
+    if "show_create_user_form" not in st.session_state:
+        st.session_state.show_create_user_form = False
 
     options = ["Stock Valorizado", "Markup", "Precio Venta Promedio", "Vencimiento Stock"]
     
@@ -39,23 +41,25 @@ def main():
         username = st.text_input("Usuario")
         password = st.text_input("Contraseña", type="password")
         if st.button("Iniciar Sesión"):
-            if login(username, password,users):
+            if login(username, password, users):
                 st.session_state.logged_in = True
                 st.rerun()
             else:
                 st.error("Credenciales incorrectas. Por favor, inténtelo nuevamente.")
+        
+        # Botón para mostrar el formulario para crear un nuevo usuario
+        if st.button("Nuevo Usuario"):
+            st.session_state.show_create_user_form = True
 
-        # Mostrar el formulario para crear un nuevo usuario
-        st.subheader("Crear Nuevo Usuario")
-        new_user_col1, new_user_col2, new_user_col3 = st.columns([1, 1, 1])
-        with new_user_col1:
-            nuevo_usuario = st.text_input("Nuevo Usuario")
-        with new_user_col2:
-            nueva_contraseña = st.text_input("Nueva Contraseña", type="password")
-        with new_user_col3:
-            if st.button("Crear Usuario"):
+        # Mostrar el formulario para crear un nuevo usuario si el botón fue clickeado
+        if st.session_state.show_create_user_form:
+            st.subheader("Crear Nuevo Usuario")
+            nuevo_usuario = st.text_input("Nuevo Usuario", key="nuevo_usuario")
+            nueva_contraseña = st.text_input("Nueva Contraseña", type="password", key="nueva_contraseña")
+            if st.button("Confirmar"):
                 if crear_usuario(nuevo_usuario, nueva_contraseña, users):
                     st.success("Usuario creado exitosamente.")
+                    st.session_state.show_create_user_form = False
                 else:
                     st.error("No se pudo crear el usuario. El nombre de usuario ya existe.")
     
