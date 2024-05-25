@@ -74,46 +74,46 @@ def main():
 
         for option in selected_options:
             if option == "Stock Valorizado":
-                stock_file = st.file_uploader("Cargar archivo de stock", type=["xlsx"])
+                stock_file = st.file_uploader("Cargar archivo de stock - stock valorizado", type=["xlsx"], key="stock_file_uploader_stock_valorizado")
                 if stock_file is not None:
                     # Validar el nombre del archivo
                     if validar_nombre_archivo(stock_file.name, "stock"):
-                        df_stock = pd.read_excel(stock_file)
+                        df_stock_stock_valorizado = pd.read_excel(stock_file)
                     else:
                         st.warning("El nombre del archivo de stock no es válido.")
             
             elif option == "Markup":
-                stock_file = st.file_uploader("Cargar archivo de stock", type=["xlsx"])
-                ventas_file = st.file_uploader("Cargar archivo de ventas", type=["xlsx"])
+                stock_file = st.file_uploader("Cargar archivo de stock - markup", type=["xlsx"], key="stock_file_uploader_markup")
+                ventas_file = st.file_uploader("Cargar archivo de ventas - markup", type=["xlsx"], key="ventas_file_uploader_markup")
                 if stock_file is not None:
                     # Validar el nombre del archivo
                     if validar_nombre_archivo(stock_file.name, "stock"):
-                        df_stock = pd.read_excel(stock_file)
+                        df_stock_markup = pd.read_excel(stock_file)
                     else:
                         st.warning("El nombre del archivo de stock no es válido.")
                 if ventas_file is not None:
-                    df_ventas = pd.read_excel(ventas_file)
+                    df_ventas_markup = pd.read_excel(ventas_file)
             
             elif option == "Precio Venta Promedio":
-                ventas_file = st.file_uploader("Cargar archivo de ventas", type=["xlsx"])
+                ventas_file = st.file_uploader("Cargar archivo de ventas - precio venta promedio", type=["xlsx"], key="ventas_file_uploader_precio_venta_promedio")
                 if ventas_file is not None:
                     # Validar el nombre del archivo
                     if validar_nombre_archivo(ventas_file.name, "ventas"):
-                        df_ventas = pd.read_excel(ventas_file)
+                        df_ventas_precio_venta_promedio = pd.read_excel(ventas_file)
                     else:
                         st.warning("El nombre del archivo de ventas no es válido.")
             
             elif option == "Vencimiento Stock":
-                stock_file = st.file_uploader("Cargar archivo de stock", type=["xlsx"])
-                vencimientos_file = st.file_uploader("Cargar archivo de vencimientos", type=["xlsx"])
+                stock_file = st.file_uploader("Cargar archivo de stock - vencimiento stock", type=["xlsx"], key="stock_file_uploader_vencimiento_stock")
+                vencimientos_file = st.file_uploader("Cargar archivo de vencimientos - vencimiento stock", type=["xlsx"], key="vencimientos_file_uploader")
                 if stock_file is not None:
                     # Validar el nombre del archivo
                     if validar_nombre_archivo(stock_file.name, "stock"):
-                        df_stock = pd.read_excel(stock_file)
+                        df_stock_vencimiento_stock = pd.read_excel(stock_file)
                     else:
                         st.warning("El nombre del archivo de stock no es válido.")
                 if vencimientos_file is not None:
-                    df_vencimientos = pd.read_excel(vencimientos_file)
+                    df_vencimientos_vencimiento_stock = pd.read_excel(vencimientos_file)
 
         if st.button("Ejecutar procesamiento de datos"):
             for option in selected_options:
