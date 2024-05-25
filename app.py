@@ -118,10 +118,10 @@ def main():
         if st.button("Ejecutar procesamiento de datos"):
             for option in selected_options:
                 output_df = None
-                if option == "Stock Valorizado" and df_stock is not None:
-                    output_df = rutas("Stock Valorizado", df_stock, None, None)
-                elif option == "Precio Venta Promedio" and df_ventas is not None:
-                    output_df = rutas("Precio Venta Promedio", None, df_ventas, None)
+                if option == "Stock Valorizado" and df_stock_stock_valorizado is not None:
+                    output_df = rutas("Stock Valorizado", df_stock_stock_valorizado, None, None)
+                elif option == "Precio Venta Promedio" and df_ventas_precio_venta_promedio is not None:
+                    output_df = rutas("Precio Venta Promedio", None, df_ventas_precio_venta_promedio, None)
                 
                 if option == "Stock Valorizado":
                     st.write("Dolar: "+ str(dolar), style={"color": "black", "font-size": "24px"})
