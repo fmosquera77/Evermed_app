@@ -31,6 +31,14 @@ def validar_nombre_archivo(ruta_archivo, palabra_clave):
 # Cargar usuarios desde el archivo JSON
 users = cargar_usuarios()
 
+def delete_file_stock():
+    st.session_state.stock_file = None
+    st.session_state.df_stock = None
+
+def delete_file_ventas():
+    st.session_state.ventas_file = None
+    st.session_state.df_ventas = None
+
 # Función principal de la aplicación Streamlit
 def main():
        
@@ -86,7 +94,7 @@ def main():
     
     else:
         # Mostrar la página principal de la aplicación si el usuario ha iniciado sesión
-        selected_options = st.multiselect("Seleccione una opción", options)
+        selected_options = st.multiselect("Seleccione una opción", options, default=options)
         
 
         if not selected_options:
@@ -114,12 +122,15 @@ def main():
                         else:
                             st.warning("El nombre del archivo de stock no es válido.")
                 else:
-                    st.write(f"Archivo cargado: {st.session_state.stock_file}")
-                    df_stock = st.session_state.df_stock
+                    # Distribuimos el espacio restante para la segunda columna
+                    col1, col2 = st.columns([1, 1])
+                    with col1:
+                        st.write(f"Archivo cargado: {st.session_state.stock_file}")
+                        df_stock = st.session_state.df_stock
+                    with col2:
                     # Agregamos un botón para limpiar el archivo seleccionado y permitir cargar otro
-                if st.button("Cambiar archivo"):
-                    st.session_state.stock_file = None
-                    st.session_state.df_stock = None
+                        st.button("Cambiar archivo", key="cambiar archivo stock", on_click=delete_file_stock)
+                    
                     
 
             elif option == "Markup":
@@ -167,8 +178,14 @@ def main():
                         else:
                             st.warning("El nombre del archivo de ventas no es válido.")
                 else:
-                    st.write(f"Archivo cargado: {st.session_state.sales_file}")
-                    df_ventas = st.session_state.df_ventas
+                    # Distribuimos el espacio restante para la segunda columna
+                    col1, col2 = st.columns([1, 1])
+                    with col1:
+                        st.write(f"Archivo cargado: {st.session_state.stock_file}")
+                        df_ventas = st.session_state.df_ventas
+                    with col2:
+                    # Agregamos un botón para limpiar el archivo seleccionado y permitir cargar otro
+                        st.button("Cambiar archivo", key="cambiar archivo ventas", on_click=delete_file_ventas)
 
             elif option == "Vencimiento Stock":
                 st.subheader("Vencimiento Stock")
