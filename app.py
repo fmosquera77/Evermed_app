@@ -6,7 +6,13 @@ from procesamiento.precio_venta_promedio import procesar_precio_venta_promedio
 from procesamiento.cotizacion_dolar import dolar
 from io import BytesIO
 from login import login, crear_usuario, cargar_usuarios
+import toml  # Importa la librería para trabajar con archivos TOML
 
+
+# Cargar la configuración desde el archivo config.toml
+config_path = "C:\\Users\\Usuario\\Desktop\\Evermed_app\\.streamlit\\config.toml"
+
+config = toml.load(config_path)
 
 # Función que reemplaza a la función `rutas` original
 def rutas(option, df_stock, df_ventas, df_vencimientos):
@@ -26,6 +32,7 @@ users = cargar_usuarios()
 
 # Función principal de la aplicación Streamlit
 def main():
+       
     st.title("Reportes Evermed")
     
     # Verificar si el usuario ha iniciado sesión
@@ -33,12 +40,24 @@ def main():
         st.session_state.logged_in = False
     if "show_create_user_form" not in st.session_state:
         st.session_state.show_create_user_form = False
+    if "stock_file" not in st.session_state:
+        st.session_state.stock_file = None
+    if "markup_stock_file" not in st.session_state:
+        st.session_state.markup_stock_file = None
+    if "markup_sales_file" not in st.session_state:
+        st.session_state.markup_sales_file = None
+    if "sales_file" not in st.session_state:
+        st.session_state.sales_file = None
+    if "vencimiento_stock_file" not in st.session_state:
+        st.session_state.vencimiento_stock_file = None
+    if "vencimiento_vencimientos_file" not in st.session_state:
+        st.session_state.vencimiento_vencimientos_file = None
 
     options = ["Stock Valorizado", "Markup", "Precio Venta Promedio", "Vencimiento Stock"]
     
     if not st.session_state.logged_in:
         # Mostrar el formulario de login si el usuario no ha iniciado sesión
-        st.subheader("Por favor, inicie sesión para acceder a la aplicación")
+        st.subheader("Por favor, inicie sesión")
         username = st.text_input("Usuario")
         password = st.text_input("Contraseña", type="password")
         if st.button("Iniciar Sesión"):
@@ -67,6 +86,12 @@ def main():
     else:
         # Mostrar la página principal de la aplicación si el usuario ha iniciado sesión
         selected_options = st.multiselect("Seleccione una opción", options)
+        
+
+        if not selected_options:
+            st.write("Seleccione una opción para continuar")
+           
+           
 
         df_stock = None
         df_ventas = None
@@ -74,57 +99,116 @@ def main():
 
         for option in selected_options:
             if option == "Stock Valorizado":
-                stock_file = st.file_uploader("Cargar archivo de stock - stock valorizado", type=["xlsx"], key="stock_file_uploader_stock_valorizado")
-                if stock_file is not None:
-                    # Validar el nombre del archivo
-                    if validar_nombre_archivo(stock_file.name, "stock"):
-                        df_stock_stock_valorizado = pd.read_excel(stock_file)
-                    else:
-                        st.warning("El nombre del archivo de stock no es válido.")
-            
+                st.subheader("Stock Valorizado")
+                if st.session_state.stock_file is None:
+                    stock_file = st.file_uploader("Cargar archivo de stock - stock valorizado", type=["xlsx"], key="stock_file_uploader_stock_valorizado")
+                    if stock_file is not None:
+                        # Validar el nombre del archivo
+                        if validar_nombre_archivo(stock_file.name, "stock"):
+                            df_stock = pd.read_excel(stock_file)
+                            st.success(f"Archivo '{stock_file.name}' cargado correctamente.")
+                            st.session_state.stock_file = stock_file.name
+                            st.session_state.df_stock = df_stock  # Guardar el DataFrame en session_state
+                            st.rerun()  # Forzar recarga de la página
+                        else:
+                            st.warning("El nombre del archivo de stock no es válido.")
+                else:
+                    st.write(f"Archivo cargado: {st.session_state.stock_file}")
+                    df_stock = st.session_state.df_stock
+                    # Agregamos un botón para limpiar el archivo seleccionado y permitir cargar otro
+                if st.button("Cambiar archivo"):
+                    st.session_state.stock_file = None
+                    st.session_state.df_stock = None
+                    
+
             elif option == "Markup":
-                stock_file = st.file_uploader("Cargar archivo de stock - markup", type=["xlsx"], key="stock_file_uploader_markup")
-                ventas_file = st.file_uploader("Cargar archivo de ventas - markup", type=["xlsx"], key="ventas_file_uploader_markup")
-                if stock_file is not None:
-                    # Validar el nombre del archivo
-                    if validar_nombre_archivo(stock_file.name, "stock"):
-                        df_stock_markup = pd.read_excel(stock_file)
-                    else:
-                        st.warning("El nombre del archivo de stock no es válido.")
-                if ventas_file is not None:
-                    df_ventas_markup = pd.read_excel(ventas_file)
-            
+                st.subheader("Markup")
+                if st.session_state.markup_stock_file is None:
+                    stock_file = st.file_uploader("Cargar archivo de stock - markup", type=["xlsx"], key="stock_file_uploader_markup")
+                    if stock_file is not None:
+                        # Validar el nombre del archivo
+                        if validar_nombre_archivo(stock_file.name, "stock"):
+                            df_stock = pd.read_excel(stock_file)
+                            st.success(f"Archivo '{stock_file.name}' cargado correctamente.")
+                            st.session_state.markup_stock_file = stock_file.name
+                            st.session_state.df_stock = df_stock  # Guardar el DataFrame en session_state
+                            st.rerun()  # Forzar recarga de la página
+                        else:
+                            st.warning("El nombre del archivo de stock no es válido.")
+                else:
+                    st.write(f"Archivo cargado: {st.session_state.markup_stock_file}")
+                    df_stock = st.session_state.df_stock
+
+                if st.session_state.markup_sales_file is None:
+                    ventas_file = st.file_uploader("Cargar archivo de ventas - markup", type=["xlsx"], key="ventas_file_uploader_markup")
+                    if ventas_file is not None:
+                        df_ventas = pd.read_excel(ventas_file)
+                        st.success(f"Archivo '{ventas_file.name}' cargado correctamente.")
+                        st.session_state.markup_sales_file = ventas_file.name
+                        st.session_state.df_ventas = df_ventas  # Guardar el DataFrame en session_state
+                        st.rerun()  # Forzar recarga de la página
+                else:
+                    st.write(f"Archivo cargado: {st.session_state.markup_sales_file}")
+                    df_ventas = st.session_state.df_ventas
+
             elif option == "Precio Venta Promedio":
-                ventas_file = st.file_uploader("Cargar archivo de ventas - precio venta promedio", type=["xlsx"], key="ventas_file_uploader_precio_venta_promedio")
-                if ventas_file is not None:
-                    # Validar el nombre del archivo
-                    if validar_nombre_archivo(ventas_file.name, "ventas"):
-                        df_ventas_precio_venta_promedio = pd.read_excel(ventas_file)
-                    else:
-                        st.warning("El nombre del archivo de ventas no es válido.")
-            
+                st.subheader("Precio Venta Promedio")
+                if st.session_state.sales_file is None:
+                    ventas_file = st.file_uploader("Cargar archivo de ventas - precio venta promedio", type=["xlsx"], key="ventas_file_uploader_precio_venta_promedio")
+                    if ventas_file is not None:
+                        # Validar el nombre del archivo
+                        if validar_nombre_archivo(ventas_file.name, "ventas"):
+                            df_ventas = pd.read_excel(ventas_file)
+                            st.success(f"Archivo '{ventas_file.name}' cargado correctamente.")
+                            st.session_state.sales_file = ventas_file.name
+                            st.session_state.df_ventas = df_ventas  # Guardar el DataFrame en session_state
+                            st.rerun()  # Forzar recarga de la página
+                        else:
+                            st.warning("El nombre del archivo de ventas no es válido.")
+                else:
+                    st.write(f"Archivo cargado: {st.session_state.sales_file}")
+                    df_ventas = st.session_state.df_ventas
+
             elif option == "Vencimiento Stock":
-                stock_file = st.file_uploader("Cargar archivo de stock - vencimiento stock", type=["xlsx"], key="stock_file_uploader_vencimiento_stock")
-                vencimientos_file = st.file_uploader("Cargar archivo de vencimientos - vencimiento stock", type=["xlsx"], key="vencimientos_file_uploader")
-                if stock_file is not None:
-                    # Validar el nombre del archivo
-                    if validar_nombre_archivo(stock_file.name, "stock"):
-                        df_stock_vencimiento_stock = pd.read_excel(stock_file)
-                    else:
-                        st.warning("El nombre del archivo de stock no es válido.")
-                if vencimientos_file is not None:
-                    df_vencimientos_vencimiento_stock = pd.read_excel(vencimientos_file)
+                st.subheader("Vencimiento Stock")
+                if st.session_state.vencimiento_stock_file is None:
+                    stock_file = st.file_uploader("Cargar archivo de stock - vencimiento stock", type=["xlsx"], key="stock_file_uploader_vencimiento_stock")
+                    if stock_file is not None:
+                        # Validar el nombre del archivo
+                        if validar_nombre_archivo(stock_file.name, "stock"):
+                            df_stock = pd.read_excel(stock_file)
+                            st.success(f"Archivo '{stock_file.name}' cargado correctamente.")
+                            st.session_state.vencimiento_stock_file = stock_file.name
+                            st.session_state.df_stock = df_stock  # Guardar el DataFrame en session_state
+                            st.rerun()  # Forzar recarga de la página
+                        else:
+                            st.warning("El nombre del archivo de stock no es válido.")
+                else:
+                    st.write(f"Archivo cargado: {st.session_state.vencimiento_stock_file}")
+                    df_stock = st.session_state.df_stock
+
+                if st.session_state.vencimiento_vencimientos_file is None:
+                    vencimientos_file = st.file_uploader("Cargar archivo de vencimientos - vencimiento stock", type=["xlsx"], key="vencimientos_file_uploader")
+                    if vencimientos_file is not None:
+                        df_vencimientos = pd.read_excel(vencimientos_file)
+                        st.success(f"Archivo '{vencimientos_file.name}' cargado correctamente.")
+                        st.session_state.vencimiento_vencimientos_file = vencimientos_file.name
+                        st.session_state.df_vencimientos = df_vencimientos  # Guardar el DataFrame en session_state
+                        st.rerun()  # Forzar recarga de la página
+                else:
+                    st.write(f"Archivo cargado: {st.session_state.vencimiento_vencimientos_file}")
+                    df_vencimientos = st.session_state.df_vencimientos
 
         if st.button("Ejecutar procesamiento de datos"):
             for option in selected_options:
                 output_df = None
-                if option == "Stock Valorizado" and df_stock_stock_valorizado is not None:
-                    output_df = rutas("Stock Valorizado", df_stock_stock_valorizado, None, None)
-                elif option == "Precio Venta Promedio" and df_ventas_precio_venta_promedio is not None:
-                    output_df = rutas("Precio Venta Promedio", None, df_ventas_precio_venta_promedio, None)
+                if option == "Stock Valorizado" and df_stock is not None:
+                    output_df = rutas("Stock Valorizado", df_stock, None, None)
+                elif option == "Precio Venta Promedio" and df_ventas is not None:
+                    output_df = rutas("Precio Venta Promedio", None, df_ventas, None)
                 
                 if option == "Stock Valorizado":
-                    st.write("Dolar: "+ str(dolar), style={"color": "black", "font-size": "24px"})
+                    st.write(f"Dolar: {dolar}")
 
                 if output_df is not None:
                     # Mostrar el DataFrame en pantalla
