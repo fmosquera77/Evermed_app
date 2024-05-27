@@ -7,10 +7,13 @@ from procesamiento.cotizacion_dolar import dolar
 from io import BytesIO
 from login import login, crear_usuario, cargar_usuarios
 import toml  # Importa la librería para trabajar con archivos TOML
+import os
 
+# Construir la ruta al archivo de configuración
+config_path = os.path.join(".streamlit", "config.toml")
 
-# Cargar la configuración desde el archivo config.toml
-config = toml.load(".streamlit\config.toml")
+# Cargar la configuración desde el archivo
+config = toml.load(config_path)
 
 # Función que reemplaza a la función `rutas` original
 def rutas(option, df_stock, df_ventas, df_vencimientos):
