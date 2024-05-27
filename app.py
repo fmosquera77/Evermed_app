@@ -10,9 +10,7 @@ import toml  # Importa la librería para trabajar con archivos TOML
 
 
 # Cargar la configuración desde el archivo config.toml
-config_path = "C:\\Users\\Usuario\\Desktop\\Evermed_app\\.streamlit\\config.toml"
-
-config = toml.load(config_path)
+config = toml.load("C:\\Users\\Usuario\\Desktop\\Evermed_app\\.streamlit\\config.toml")
 
 # Función que reemplaza a la función `rutas` original
 def rutas(option, df_stock, df_ventas, df_vencimientos):
