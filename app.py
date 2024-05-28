@@ -36,8 +36,12 @@ def delete_file_stock():
     st.session_state.df_stock = None
 
 def delete_file_ventas():
-    st.session_state.ventas_file = None
+    st.session_state.sales_file = None
     st.session_state.df_ventas = None
+
+
+
+
 
 # Función principal de la aplicación Streamlit
 def main():
@@ -181,7 +185,7 @@ def main():
                     # Distribuimos el espacio restante para la segunda columna
                     col1, col2 = st.columns([1, 1])
                     with col1:
-                        st.write(f"Archivo cargado: {st.session_state.stock_file}")
+                        st.write(f"Archivo cargado: {st.session_state.sales_file}")
                         df_ventas = st.session_state.df_ventas
                     with col2:
                     # Agregamos un botón para limpiar el archivo seleccionado y permitir cargar otro
@@ -225,19 +229,33 @@ def main():
                 elif option == "Precio Venta Promedio" and df_ventas is not None:
                     output_df = rutas("Precio Venta Promedio", None, df_ventas, None)
                 
-                if option == "Stock Valorizado":
-                    st.write(f"Dolar: {dolar}")
-
+                
                 if output_df is not None:
-                    # Mostrar el DataFrame en pantalla
-                    st.write(f"**{option}**")
-                    st.dataframe(output_df)
-
+                    
                     # Crea un gráfico de barras para las opciones seleccionadas
                     x_column = output_df.columns[0]  # Tomar el nombre de la primera columna
                     y_column = output_df.columns[1]  # Tomar el nombre de la segunda columna
-                    fig = px.bar(output_df, x=x_column, y=y_column, title=f'{y_column} por {x_column}')
-                    st.plotly_chart(fig)
+                    fig = px.bar(output_df, x=x_column, y=y_column)
+                   
+                   # Crear una función para mostrar el DataFrame y el gráfico en diferentes pestañas
+                    def mostrar_en_pestanas(df, fig):
+                        # Crear pestañas
+                        tab1, tab2 = st.tabs(["DataFrame", "Gráfico"])
+
+                        # Mostrar el DataFrame en la primera pestaña
+                        with tab1:
+                            st.write(option)
+                            if option == "Stock Valorizado":
+                                st.write(f"Dolar: {dolar}")
+                            st.dataframe(df)
+
+                        # Mostrar el gráfico en la segunda pestaña
+                        with tab2:
+                            if fig is not None:
+                                st.write(option)
+                                st.plotly_chart(fig)
+
+                    mostrar_en_pestanas(output_df, fig)
 
                     # Crear un BytesIO object para escribir los datos de Excel
                     excel_buffer = BytesIO()
