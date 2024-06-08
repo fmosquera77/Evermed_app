@@ -22,3 +22,4 @@ def procesar_precio_venta_promedio(df_ventas):
     df_precio_vta_prom['Precio de Venta Promedio'] = df_precio_vta_prom['Precio de Venta Promedio'].apply(lambda x: round(x, 2))
           
     return df_precio_vta_prom
+    

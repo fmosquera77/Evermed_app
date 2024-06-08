@@ -3,12 +3,12 @@ from bs4 import BeautifulSoup
 
 def obtener_cotizacion_dolar():
     try:
-        url = 'https://www.bna.com.ar/Cotizador/MonedasHistorico'
+        url = 'https://www.bna.com.ar/Personas'
         response = requests.get(url)
 
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
-            tabla = soup.find('table', class_='table table-bordered cotizador')
+            tabla = soup.find('table', class_='table cotizacion')
             valor_buscado = "Dolar U.S.A"
 
             fila_valor_buscado = None
