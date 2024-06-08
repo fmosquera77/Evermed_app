@@ -10,6 +10,10 @@ def login(username, password):
     return False
 
 def cargar_usuarios():
+    if not os.path.exists('users.json'):
+        with open('users.json', 'w') as file:
+            json.dump({}, file)
     with open('users.json', 'r') as file:
         users = json.load(file)
     return users
+
