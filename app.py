@@ -10,7 +10,6 @@ from utils.file_validation import validar_nombre_archivo
 from utils.session_management import (
     delete_file,
     initialize_session_state,
-    
 )
 from utils.plot_util import mostrar_en_pestanas
 import toml
@@ -41,7 +40,7 @@ def main():
         if st.button("Iniciar Sesión"):
             if login(username, password):
                 st.session_state.logged_in = True
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error("Credenciales incorrectas. Por favor, inténtelo nuevamente.")
         
@@ -60,15 +59,21 @@ def main():
                     st.error("No se pudo crear el usuario. El nombre de usuario ya existe.")
     else:
         # Main application form
-        selected_options = st.multiselect("Seleccione una opción", options, default=options)
-        if not selected_options:
+        selected_options = st.session_state.get("selected_options", [])
+        new_selected_options = st.multiselect("Seleccione una opción", options, default=selected_options)
+
+        if new_selected_options != selected_options:
+            st.session_state.selected_options = new_selected_options
+            st.experimental_rerun()
+
+        if not new_selected_options:
             st.write("Seleccione una opción para continuar")
 
         df_stock = None
         df_ventas = None
         df_vencimientos = None
 
-        for option in selected_options:
+        for option in new_selected_options:
             if option == "Stock Valorizado":
                 # Handling Stock Valorizado
                 handle_file_upload(option, "stock", "stock_file", "stock_valorizado")
@@ -88,7 +93,7 @@ def main():
                 handle_file_upload(option, "vencimientos", "vencimiento_vencimientos_file", "vencimiento_stock")
 
         if st.button("Ejecutar procesamiento de datos"):
-            for option in selected_options:
+            for option in new_selected_options:
                 process_data(option)
 
 def handle_file_upload(option, file_type, session_key, label):
@@ -100,7 +105,7 @@ def handle_file_upload(option, file_type, session_key, label):
                 st.success(f"Archivo '{file.name}' cargado correctamente.")
                 st.session_state[session_key] = file.name
                 st.session_state[f"df_{file_type}"] = df
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.warning(f"El nombre del archivo de {file_type} no es válido.")
     else:
@@ -109,8 +114,9 @@ def handle_file_upload(option, file_type, session_key, label):
             st.write(f"Archivo cargado: {st.session_state[session_key]}")
             df = st.session_state[f"df_{file_type}"]
         with col2:
-            st.button("Cambiar archivo", key=f"cambiar_archivo_{file_type}", on_click=lambda: delete_file(file_type))
-
+            if st.button("Cambiar archivo"):
+                delete_file (session_key, file_type)
+                
 def process_data(option):
     df_stock = st.session_state.get("df_stock")
     df_ventas = st.session_state.get("df_ventas")

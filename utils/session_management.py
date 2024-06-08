@@ -20,6 +20,7 @@ def initialize_session_state():
     if "vencimiento_vencimientos_file" not in st.session_state:
         st.session_state.vencimiento_vencimientos_file = None
 
-def delete_file(file_type):
-    st.session_state[f"{file_type}_file"] = None
-    st.session_state[f"df_{file_type}"] = None
+def delete_file(session_key, file_type):
+        st.session_state[session_key] = None
+        st.session_state[f"df_{file_type}"] = None
+        st.experimental_rerun()
