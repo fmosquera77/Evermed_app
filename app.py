@@ -40,7 +40,7 @@ def main():
         if st.button("Iniciar Sesión"):
             if login(username, password):
                 st.session_state.logged_in = True
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Credenciales incorrectas. Por favor, inténtelo nuevamente.")
         
@@ -64,7 +64,7 @@ def main():
 
         if new_selected_options != selected_options:
             st.session_state.selected_options = new_selected_options
-            st.experimental_rerun()
+            st.rerun()
 
         if not new_selected_options:
             st.write("Seleccione una opción para continuar")
@@ -105,7 +105,7 @@ def handle_file_upload(option, file_type, session_key, label):
                 st.success(f"Archivo '{file.name}' cargado correctamente.")
                 st.session_state[session_key] = file.name
                 st.session_state[f"df_{file_type}"] = df
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.warning(f"El nombre del archivo de {file_type} no es válido.")
     else:
