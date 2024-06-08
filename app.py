@@ -30,7 +30,7 @@ def main():
     st.title("Reportes Evermed")
     initialize_session_state()
 
-    options = ["Stock Valorizado", "Markup", "Precio Venta Promedio", "Vencimiento Stock"]
+    options = ["Stock Valorizado", "Markup", "Precio Venta Promedio", "Vencimiento Stock", ""]
     
     if not st.session_state.logged_in:
         # Login and user creation form
